@@ -89,6 +89,7 @@ La API key vive en [`docs/config.js`](./docs/config.js) y se ejecuta en el naveg
 ## Accesibilidad e intención
 
 Word Complet nace con una idea fuerte en mente: la próxima generación de interfaces no será más rápida tecleando. Será *no tecleando*. Ayudar a comunicar ideas completas con 5 taps en lugar de 50 pulsaciones — especialmente a quien hoy pelea con los teclados — es el objetivo.
+Si eres capaz de hacer escalar ésta tecnología RÓBAMELA, yo creo para que el mundo avance y el permitir expresar ideas en vez de tecla a tecla es algo que será épico en breve periodo de tiempo, y la gente dejará la interfaz teclado por interfaz palabra.
 
 ## Licencia
 

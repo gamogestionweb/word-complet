@@ -1,9 +1,0 @@
-<resources>
-    <string name="app_name">Word Complet</string>
-    <string name="hint_start">Pulsa una palabra para empezar a escribir...</string>
-    <string name="btn_undo">Deshacer</string>
-    <string name="btn_clear">Limpiar</string>
-    <string name="btn_copy">Copiar</string>
-    <string name="text_copied">Texto copiado al portapapeles</string>
-    <string name="btn_refresh">Regenerar</string>
-</resources>

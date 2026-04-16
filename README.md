@@ -1,67 +1,95 @@
-# Word Complet - The Reverse AI Keyboard
+# Word Complet
 
-**Stop typing. Start thinking.**
+**El teclado AI inverso. Deja de teclear letra a letra.**
 
-Word Complet flips how we write on phones. Instead of typing letter by letter, AI predicts what you **want to say** and shows you complete words to tap. You just tap-tap-tap your idea, and AI assembles the perfect message.
+👉 **[Pruébalo ahora en gamogestionweb.github.io/word-complet](https://gamogestionweb.github.io/word-complet/)**
 
-## The Problem
+---
 
-Typing on a phone is slow, tedious, and boring. SwiftKey and other keyboards predict the **next word** — but you still type letter by letter. We're in 2026 and still pecking at tiny letters like it's 2007.
+## La idea
 
-## The Solution
+Llevamos veinte años tecleando letra por letra en una pantalla de cristal. Los autocorrectores predicen **la siguiente letra**. Los teclados predictivos predicen **la siguiente palabra**. Pero seguimos pulsando letra a letra como si fuese 2007.
 
-Word Complet uses **reverse AI generation**. Instead of AI generating text, AI predicts your **intention** — what idea you want to transmit — and gives you the words to build it as fast as possible.
+**Word Complet le da la vuelta.** En tu pantalla aparecen **32 palabras o expresiones** que una IA cree que puedes querer decir. Tú pulsas las que encajan con tu idea. Tras dos o tres taps, la IA te devuelve la frase completa, natural, escrita.
 
-### How it works
+No es corrección. No es sugerencia. Es **predicción inversa**: la IA lee tu intención, tú confirmas con un tap.
 
-1. You see ~200 predicted words on screen, ordered by probability
-2. Tap the words that match your idea (e.g., `turn off` `TV` `now`)
-3. AI interprets your intention and writes the natural message: *"Turn off the TV now, please"*
-4. You can tap multiple words rapidly — words stay on screen, no reload needed
-5. After you pause, AI refreshes predictions based on your evolving idea
-
-### The key insight
-
-Traditional keyboards: **you write** → AI corrects
-Word Complet: **AI predicts your idea** → you confirm with taps
-
-It's like the AI is reading your mind. You transmit complete ideas faster than any keyboard because you never type a single letter.
-
-## Features
-
-- **Reverse AI prediction**: AI doesn't suggest next words — it predicts your entire intention
-- **200 words on screen**: Scrollable grid, most probable words first
-- **Multi-tap**: Tap several words rapidly without waiting for reload
-- **Smart polish**: AI interprets disordered words and writes the natural message
-- **Regenerate**: Don't see what you need? One tap for fresh predictions
-- **Context-aware**: Each word you tap reshapes predictions for your evolving idea
-- **Offline fallback**: ~300 contextual words available without internet
-- **Dark UI**: Clean, distraction-free interface
-
-## Architecture
-
-- **Android** native app (Kotlin)
-- **OpenAI API** (gpt-4.1-nano) for word prediction and message polishing
-- **OkHttp** for API calls
-- **Kotlin Coroutines** for async operations
-- **Material Design** chips for word display
-
-## Build
-
-```bash
-./gradlew assembleDebug
+```
+Pantalla:   [hola]  [necesito]  [te aviso]  [luego]  [gracias]  ...
+Tú tocas:   necesito → ordenar → casa → ahora
+IA escribe: "Necesito ordenar la casa ahora, gracias."
 ```
 
-APK output: `app/build/outputs/apk/debug/app-debug.apk`
+Cada idea que tenías en la cabeza sale por el móvil en segundos, no en minutos. Personas con movilidad reducida, mayores que sufren con los teclados diminutos, o cualquiera que quiera comunicar una idea a la velocidad a la que la piensa: esto es para vosotros.
 
-## Vision
+---
 
-This is not a keyboard replacement — it's a **communication paradigm shift**. The future of mobile text input isn't faster typing. It's not typing at all.
+## Probarlo
 
-Imagine: people with motor disabilities communicating at full speed. Elderly people sending messages without struggling with tiny keys. Anyone transmitting complex ideas with 5 taps instead of 50 keystrokes.
+**Online** — nada que instalar: <https://gamogestionweb.github.io/word-complet/>
 
-**Word Complet: Write at the speed of thought.**
+Abre la URL en el móvil y toca **Compartir → Añadir a pantalla de inicio** para usarla como app nativa (iPhone y Android).
 
-## License
+---
 
-MIT
+## ¿Cómo funciona por dentro?
+
+- **Frontend**: HTML/CSS/JavaScript puro. Sin frameworks, sin build step.
+- **Modelo**: `gpt-5.4-nano` (con fallback automático a `gpt-4.1-nano` y `gpt-4o-mini`).
+- **Prompt de sistema** estable en cada llamada: le explica al modelo que su rol es *motor de predicción*, no asistente de chat. El texto puede ser mensaje, nota, email formal, lista o cualquier otra cosa — el modelo adapta el registro.
+- **Cache LRU** de 25 contextos en memoria del navegador, para que pulsar la misma secuencia dos veces no repita la llamada.
+- **Fallback offline**: ~400 palabras en español en 7 categorías temáticas, que aparecen si la IA cae o no hay API key.
+
+El código del cliente está en [`docs/`](./docs) y se sirve directamente desde GitHub Pages.
+
+## Estructura del repo
+
+```
+word-complet/
+├── docs/                      ← GitHub Pages (la app en producción)
+│   ├── index.html             ← Landing + UI
+│   ├── style.css
+│   ├── app.js                 ← Estado, render, debounces, AbortControllers
+│   ├── api-client.js          ← Cliente OpenAI (prompts, cache LRU, fallback)
+│   ├── config.js              ← API key + lista de modelos
+│   ├── word-pools.js          ← Pools offline en español
+│   ├── manifest.webmanifest
+│   ├── sw.js                  ← Service worker (cache del shell)
+│   └── icons/
+├── README.md
+└── LICENSE
+```
+
+## Correr en local
+
+Cualquier servidor estático vale:
+
+```bash
+cd docs
+python3 -m http.server 8000
+# luego abre http://localhost:8000
+```
+
+O si tienes Node:
+
+```bash
+npx serve docs
+```
+
+---
+
+## API key
+
+La API key vive en [`docs/config.js`](./docs/config.js) y se ejecuta en el navegador del visitante. Cualquiera con DevTools puede leerla. Mitigaciones que recomendamos encarecidamente a quien clone esto:
+
+1. Crear un **proyecto aislado** en [platform.openai.com](https://platform.openai.com/organization/projects) con **límite de gasto mensual** (p. ej. 5 €).
+2. Restringir los modelos permitidos a: `gpt-5.4-nano`, `gpt-4.1-nano`, `gpt-4o-mini`.
+3. Rotar la key si el gasto se dispara. Borrar la key hace que la app caiga al pool offline — sigue funcionando, solo que sin IA.
+
+## Accesibilidad e intención
+
+Word Complet nace con una idea fuerte en mente: la próxima generación de interfaces no será más rápida tecleando. Será *no tecleando*. Ayudar a comunicar ideas completas con 5 taps en lugar de 50 pulsaciones — especialmente a quien hoy pelea con los teclados — es el objetivo.
+
+## Licencia
+
+MIT — ver [LICENSE](./LICENSE).
